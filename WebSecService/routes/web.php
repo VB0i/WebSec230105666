@@ -1,10 +1,10 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\Web\usersController;
+// use Illuminate\Support\Facades\View;
 
-
-Route::resource('users', UserController::class)->except(['show']);
 Route::get('/', function () {
     return view('welcome'); //welcome.blade.php
 });
@@ -52,3 +52,12 @@ Route::get('/products', function () {
     ];
     return view('products', compact('products'));
 });
+
+// Route::resource('users', UserController::class)->except(['show']);
+//Web Authentication ==================================================
+
+Route::get('/register', [usersController::class, 'register'])->name('register');
+Route::post('/register', [usersController::class, 'doRegister'])->name('do_register');
+Route::get('/login', [usersController::class, 'login'])->name('login');
+Route::post('/login', [usersController::class, 'doLogin'])->name('do_login');
+Route::get('/logout', [usersController::class, 'doLogout'])->name('do_logout');

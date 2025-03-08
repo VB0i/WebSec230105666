@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Users List</title>
+    <title>users List</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
@@ -16,16 +16,16 @@
     <div class="container-fluid">
         <ul class="navbar-nav">
             <li class="nav-item">
-            <a class="nav-link" href="./">Home</a>
+                <a class="nav-link" href="./">Home</a>
             </li>
-                <li class="nav-item">
-<a class="nav-link" href="./even">Even Numbers</a>
+            <li class="nav-item">
+                <a class="nav-link" href="./even">Even Numbers</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="./prime">Prime Numbers</a>
             </li>
             <li class="nav-item">
-            <a class="nav-link" href="./multable">Multiplication Table</a>
+                <a class="nav-link" href="./multable">Multiplication Table</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="./MiniTest">Supermarket Bill</a>
@@ -37,7 +37,7 @@
                 <a class="nav-link" href="./products">products</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('users.index') }}">Users List</a>
+                <a class="nav-link" href="{{ route('users.index') }}">users List</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('users.create') }}">Add User</a>
@@ -46,7 +46,7 @@
     </div>
 </nav>
     <div class="container mt-5">
-        <h1>Users List</h1>
+        <h1>users List</h1>
         <form action="{{ route('users.index') }}" method="GET" class="mb-4">
             <div class="form-row">
                 <div class="col">
