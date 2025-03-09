@@ -1,11 +1,13 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Web\usersController;
-// use Illuminate\Support\Facades\View;
+use App\Http\Controllers\UserController;
 
-Route::get('/', function () {
+
+// =====================================
+// Basic routes without controllers
+Route::get('/welcome', function () {
     return view('welcome'); //welcome.blade.php
 });
 Route::get('/multable', function () {
@@ -52,12 +54,28 @@ Route::get('/products', function () {
     ];
     return view('products', compact('products'));
 });
+// =====================================
 
-// Route::resource('users', UserController::class)->except(['show']);
-//Web Authentication ==================================================
+Route::get('/', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/register', [usersController::class, 'register'])->name('register');
-Route::post('/register', [usersController::class, 'doRegister'])->name('do_register');
-Route::get('/login', [usersController::class, 'login'])->name('login');
-Route::post('/login', [usersController::class, 'doLogin'])->name('do_login');
-Route::get('/logout', [usersController::class, 'doLogout'])->name('do_logout');
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+
+Route::get('/users', [UserController::class, 'index'])->name('users.index');
+Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+Route::get('/users/register', [UserController::class, 'register'])->name('users.register');
+Route::post('/do-register', [UserController::class, 'register'])->name('do_register');
+Route::post('/users', [UserController::class, 'store'])->name('users.store');
+
+require __DIR__.'/auth.php';
+
+
+Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
+Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
+Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');

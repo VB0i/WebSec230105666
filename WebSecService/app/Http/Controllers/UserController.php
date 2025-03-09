@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 
 use App\Models\User;
 
+use Illuminate\Support\Facades\Hash;
+
 class UserController extends Controller
 {
     public function index(Request $request)
@@ -63,5 +65,26 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
         return redirect()->route('users.index');
+    }
+    public function register()
+    {
+        return view('users.register');
+    }
+
+    public function doRegister(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:6|confirmed',
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+        return redirect()->route('users.index')->with('success', 'Registration successful!');
     }
 }
