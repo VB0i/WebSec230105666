@@ -1,11 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Dashboard') }} <a class="nav-link" href="./even">Even Numbers</a> 
-                            
-                        
-                                
-                            
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight flex items-center gap-4">
+            {{ __('Dashboard') }}
+            <a class="nav-link hover:text-gray-600 dark:hover:text-gray-300" href="./even">Even Numbers</a>
         </h2>
     </x-slot>
 

@@ -74,7 +74,7 @@
                                 <a class="nav-link" href="./">Dashboard</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="./even">Even Numbers</a>
+                                <span class="nav-link">Welcome, {{ Auth::user()->name ?? 'Guest' }}</span>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="./prime">Prime Numbers</a>
