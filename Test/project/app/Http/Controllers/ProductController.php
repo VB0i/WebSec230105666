@@ -44,7 +44,7 @@ class ProductController extends Controller
     }
 
     public function edit(Request $request, Product $product = null) {
-		if(!auth()->check()) return redirect()->route('login');
+        if(!auth()->user()) return redirect('/');
 		$product = $product??new Product();
 		return view('products.edit', compact('product'));
 	}
@@ -67,7 +67,10 @@ class ProductController extends Controller
     
 
         public function delete(Request $request, Product $product) {
+            if(!auth()->user()->hasPermissionTo('delete_products')) abort(401);
+
             $product->delete();
+
             return redirect()->route('products_list');
         }
         

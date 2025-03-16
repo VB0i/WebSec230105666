@@ -1,51 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
+@extends('layouts.master')
 
-<!-- Register Button at Top Right -->
-<!-- <div class="container mt-3">
-    <div class="d-flex justify-content-end">
-        <a href="{{ route('register') }}" class="btn btn-success">Register</a>
-    </div>
-</div> -->
+@section('title', 'Main Page')
 
-<div class="container mt-3">
-    <div class="card shadow-lg border-0 rounded-3">
-        <div class="card-header bg-primary text-white text-center">
-            <h2>User Profile</h2>
-        </div>
-        <div class="card-body">
+@section('content')
+
+<div class="d-flex justify-content-center">
+    <div class="row">
+        <div class="m-4 col-sm-12">
             <table class="table table-striped">
-                <tbody>
-                    <tr>
-                        <th>Name:</th>
-                        <td>{{ auth()->user()->name ?? 'Guest' }}</td>
-                    </tr>
-                    <tr>
-                        <th>Email:</th>
-                        <td>{{ auth()->user()->email ?? 'Guest' }}</td>
-                    </tr>
-                    <tr>
-                        <th>Password (Hashed):</th>
-                        <td><code>{{ auth()->user()->password ?? 'Guest' }}</code></td>
-                    </tr>
-                </tbody>
+                <tr>
+                    <th>Name</th><td>{{$user->name}}</td>
+                </tr>
+                <tr>
+                    <th>Email</th><td>{{$user->email}}</td>
+                </tr>
+                <tr>
+                    <th>Roles</th>
+                    <td>
+                        @foreach($user->roles as $role)
+                            <span class="badge bg-primary">{{$role->name}}</span>
+                        @endforeach
+                    </td>
+                </tr>
+                <tr>
+                    <th>Permissions</th>
+                    <td>
+                        @foreach($permissions as $permission)
+                            <span class="badge bg-secondry">{{$permission->name}}</span>
+                        @endforeach
+                    </td>
+                </tr>
             </table>
-
-            <!-- Logout Button (Redirects to Register Page) -->
-            <div class="d-flex justify-content-center mt-4">
-                <a href="/" class="btn btn-danger">Logout</a>
+            <div class="row">
+                <div class="col col-10">
+                </div>
+                <div class="col col-2">
+                    @if(auth()->user()->hasPermissionTo('edit_users')||auth()->id()==$user->id)
+                    <a href="{{route('users_edit')}}" class="btn btn-success form-control">Edit</a>
+                    @endif
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+
+    <!-- Logout Button -->
+    <div class="d-flex justify-content-center mt-4">
+        <form action="{{ route('do_logout') }}" method="POST">
+            @csrf
+            @method('POST')
+            <button type="submit" class="btn btn-danger">Logout</button>
+        </form>
+    </div>
+
+
+
+
+
+
+@endsection

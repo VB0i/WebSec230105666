@@ -6,9 +6,9 @@
         <h1>Products</h1>
     </div>
     <div class="col col-2">
-        @auth
+        @can('add_products')
         <a href="{{route('products_edit')}}" class="btn btn-success form-control">Add Product</a>
-        @endauth
+        @endcan
     </div>
 </div>
 <form>

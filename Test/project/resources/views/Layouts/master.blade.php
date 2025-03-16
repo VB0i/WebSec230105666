@@ -44,18 +44,30 @@
         </li>
       </ul>
       <ul class="navbar-nav">
-        @if(Auth::check())
-          <li class="nav-item">
-            <a class="btn btn-outline-danger" href="{{ route('do_logout') }}">Logout</a>
-          </li>
-        @else
-          <li class="nav-item me-2">
-            <a class="btn btn-outline-primary" href="{{ route('login') }}">Login</a>
-          </li>
-          <li class="nav-item">
-            <a class="btn btn-outline-success" href="{{ route('register') }}">Register</a>
-          </li>
-        @endif
+      @if(Auth::check())
+    <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ Auth::user()->name }} <!-- Display the logged-in user's name -->
+        </button>
+        <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="{{ route('profile') }}">Profile</a></li>
+            <li><a class="dropdown-item" href="#">Dashboard</a></li> <!-- Add a Dashboard link -->
+            <li><hr class="dropdown-divider"></li> <!-- Add a divider -->
+            <li>
+                <a class="dropdown-item text-danger" href="{{ route('do_logout') }}"> <!-- Logout link -->
+                    Logout
+                </a>
+            </li>
+        </ul>
+    </div>
+@else
+    <li class="nav-item me-2">
+        <a class="btn btn-outline-primary" href="{{ route('login') }}">Login</a>
+    </li>
+    <li class="nav-item">
+        <a class="btn btn-outline-success" href="{{ route('register') }}">Register</a>
+    </li>
+@endif
       </ul>
     </div>
   </div>
@@ -64,7 +76,7 @@
     <div class="container">
         @yield('content')
     </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <style>
 .material-symbols-outlined {
   font-variation-settings:

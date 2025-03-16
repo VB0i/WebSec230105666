@@ -15,6 +15,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
+
 Route::get('/multable', function () {
     return view('multable');
 });
@@ -37,11 +39,14 @@ Route::get('/MiniTest', function(){
 
 // ========================= Controllers views =========================
 
+
+
+
+
 Route::get('/calculator', [CalculaterController::class,'index']);
 Route::get('/transcript', [TranscriptController::class ,'index']);
 
 
-Route::get('/users/UserProfile', [UsersController::class,'viewProfile'])->name('User_Profile');
 
 // mine
 // Route::get('products', [ProductController::class, 'list'])->name('products_list');
@@ -62,3 +67,12 @@ Route::post('register', [UsersController::class, 'doRegister'])->name('do_regist
 Route::get('login', [UsersController::class, 'login'])->name('login');
 Route::post('login', [UsersController::class, 'doLogin'])->name('do_login');
 Route::get('logout', [UsersController::class, 'doLogout'])->name('do_logout');
+Route::post('/logout', [UsersController::class, 'doLogout'])->name('do_logout');
+
+Route::get('/welcome', [UsersController::class, 'index'])->name('welcome');
+
+Route::get('UserProfile/{user?}', [UsersController::class,'profile'])->name('profile');
+// Route::get('UserProfile', [UsersController::class, 'viewProfile'])->name('profile')->middleware('auth');
+// Route::get('profile/{user?}', [UsersController::class, 'profile'])->name('profile');
+
+Route::get('users/edit/{user?}', [UsersController::class, 'edit'])->name('users_edit');

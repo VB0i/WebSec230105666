@@ -9,7 +9,7 @@
         <h3>Welcome to Our Website</h3>
     </div>
     <div class="card-body">
-        <h4 class="card-title">Hello, Visitor!</h4>
+        <h4 class="card-title">Welcome, {{ auth()->user()->name ?? 'Guest' }}!</h4>
         <p class="card-text">
             Welcome to our website! We are thrilled to have you here. Whether you're looking for information, services, or just browsing around, we hope you find everything you need. Our platform is designed to provide you with the best experience possible.
         </p>
