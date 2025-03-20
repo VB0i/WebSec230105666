@@ -8,10 +8,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
+
 class User extends Authenticatable
 {
-
     use HasRoles;
+
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
@@ -24,7 +25,6 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'Role',
     ];
 
     /**
@@ -37,12 +37,6 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-
-    protected $attributes = [
-        'Role' => 'user', // Default role
-    ];
-
-    
     /**
      * Get the attributes that should be cast.
      *

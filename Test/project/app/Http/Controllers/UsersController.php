@@ -1,6 +1,7 @@
 <?php
-
 namespace App\Http\Controllers;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -8,6 +9,8 @@ use App\Models\User;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Artisan;
+// use App\Http\Controllers\Role;
 
 class UsersController extends Controller {
     use ValidatesRequests;
@@ -21,31 +24,57 @@ class UsersController extends Controller {
         return view('welcome');
     }
 
+    //dashboard class
+    public function dashboard()
+    {
+        // if(!auth()->user()->hasPermissionTo('show_users')) {
+        //     abort(401);
+        // }
+        return view('users.dashboard');
+    }
+
     public function register(Request $request) {
         return view('users.register');
     }
 
     public function doRegister(Request $request) {
-        $request->validate([
-            'name' => ['required', 'string'],
-            'email' => ['required', 'email', 'unique:users'],
-            'password' => ['required', 'confirmed', Password::min(8)],
-        ]);
+
+    	try {
+    		$this->validate($request, [
+	        'name' => ['required', 'string', 'min:5'],
+	        'email' => ['required', 'email', 'unique:users'],
+	        'password' => ['required', 'confirmed', Password::min(8)->numbers()->letters()->mixedCase()->symbols()],
+	    	]);
+    	}
+    	catch(\Exception $e) {
+
+    		return redirect()->back()->withInput($request->input())->withErrors('Invalid registration information.');
+    	}
+
+    	
+    	$user =  new User();
+	    $user->name = $request->name;
+	    $user->email = $request->email;
+	    $user->password = bcrypt($request->password); //Secure
+	    $user->save();
+
+        return redirect('/');
+    }
     
         // Create new user with default role = 'user'
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-            'Role' => 'user', // Default role matches User model
-        ]);
+        // $user = User::create([
+        //     'name' => $request->name,
+        //     'email' => $request->email,
+        //     'password' => bcrypt($request->password),
+        //     'Role' => 'user', // Default role matches User model
+        // ]);
     
         // Log in the new user
-        Auth::login($user);
+    //     Auth::login($user);
     
-        // Redirect to login page
-        return redirect()->route('login')->with('success', 'Registration successful! Please login.');
-    }
+    //     // Redirect to login page
+    //     return redirect()->route('login')->with('success', 'Registration successful! Please login.');
+    // }
 
     public function login(Request $request) {
         return view('users.login');
@@ -108,7 +137,7 @@ class UsersController extends Controller {
    
         $user = $user??auth()->user();
         if(auth()->id()!=$user?->id) {
-            if(!auth()->user()->hasPermissionTo('edit')) abort(401);
+            if(!auth()->user()->hasPermissionTo('edit_users')) abort(401);
         }
     
         $roles = [];
@@ -128,8 +157,31 @@ class UsersController extends Controller {
     }
 
 
-       
+    public function save(Request $request, User $user) {
 
+        if(auth()->id()!=$user->id) {
+            if(!auth()->user()->hasPermissionTo('show_users')) abort(401);
+        }
+
+        $user->name = $request->name;
+        $user->save();
+
+        if(auth()->user()->hasPermissionTo('admin_users')) {
+
+            $user->syncRoles($request->roles);
+            $user->syncPermissions($request->permissions);
+
+            Artisan::call('cache:clear');
+        }
+
+        //$user->syncRoles([1]);
+        //Artisan::call('cache:clear');
+
+        return redirect(route('profile', ['user'=>$user->id]));
+    }
+
+
+    
 
     public function doLogout(Request $request) {
         Auth::logout();
@@ -141,4 +193,30 @@ class UsersController extends Controller {
 
         
     }
+
+
+public function savePassword(Request $request, User $user) {
+
+    if(auth()->id()==$user?->id) {
+        
+        $this->validate($request, [
+            'password' => ['required', 'confirmed', Password::min(8)->numbers()->letters()->mixedCase()->symbols()],
+        ]);
+
+        if(!Auth::attempt(['email' => $user->email, 'password' => $request->old_password])) {
+            
+            Auth::logout();
+            return redirect('/');
+        }
+    }
+    else if(!auth()->user()->hasPermissionTo('edit_users')) {
+
+        abort(401);
+    }
+
+    $user->password = bcrypt($request->password); //Secure
+    $user->save();
+
+    return redirect(route('profile', ['user'=>$user->id]));
+}
 }

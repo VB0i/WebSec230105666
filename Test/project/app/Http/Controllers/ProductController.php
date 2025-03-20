@@ -2,12 +2,14 @@
 namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 use DB;
 use App\Http\Controllers\Controller;
 
+
 class ProductController extends Controller
 {
-
+    use ValidatesRequests;
 
     public function __construct()
     {
