@@ -23,25 +23,25 @@
           <a class="nav-link active" aria-current="page" href="/">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="multable">Multibication</a>
+          <a class="nav-link" href="/multable">Multibication</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="even">Even Numbers</a>
+          <a class="nav-link" href="/even">Even Numbers</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="prime">Prime Numbers</a>
+          <a class="nav-link" href="/prime">Prime Numbers</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="MiniTest">Market</a>
+          <a class="nav-link" href="/MiniTest">Market</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="transcript">Student Transcript</a>
+          <a class="nav-link" href="/transcript">Student Transcript</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="calculator">Calculator</a>
+            <a class="nav-link" href="/calculator">Calculator</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="products">Products</a>
+          <a class="nav-link" href="/products">Products</a>
         </li>
       </ul>
       <ul class="navbar-nav">

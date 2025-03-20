@@ -48,23 +48,26 @@
                                     </thead>
                                     <tbody>
                                         @foreach(\App\Models\User::all() as $user)
-                                        <tr>
-                                            <td>{{ $user->id }}</td>
-                                            <td>{{ $user->name }}</td>
-                                            <td>{{ $user->email }}</td>
-                                            <td>
-                                                @foreach($user->roles as $role)
-                                                    <span class="badge bg-info">{{ $role->name }}</span>
-                                                @endforeach
-                                            </td>
-                                            <td>
-                                                @can('edit_users')
-                                                <a href="{{ route('users_edit', $user->id) }}" class="btn btn-sm btn-primary">
-                                                    <i class="fas fa-edit"></i> Edit
-                                                </a>
-                                                @endcan
-                                            </td>
-                                        </tr>
+                                            @if(auth()->id() === 1 || $user->id !== 1)
+                                            <tr>
+                                                <td>{{ $user->id }}</td>
+                                                <td>{{ $user->name }}</td>
+                                                <td>{{ $user->email }}</td>
+                                                <td>
+                                                <!-- {{ $user->roles->pluck('name')->implode(', ') }} -->
+                                                    @foreach($user->roles as $role)
+                                                        <span class="badge bg-info">{{ $role->name }}</span>
+                                                    @endforeach
+                                                </td>
+                                                <td>
+                                                    @can('edit_users')
+                                                    <a href="{{ route('users_edit', $user->id) }}" class="btn btn-sm btn-primary">
+                                                        <i class="fas fa-edit"></i> Edit
+                                                    </a>
+                                                    @endcan
+                                                </td>
+                                            </tr>
+                                            @endif
                                         @endforeach
                                     </tbody>
                                 </table>

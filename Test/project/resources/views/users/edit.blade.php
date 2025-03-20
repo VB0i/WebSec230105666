@@ -29,7 +29,7 @@ $(document).ready(function(){
             </div>
             @can('admin_users')
             <div class="col-12 mb-2">
-                <label for="model" class="form-label">Roles:</label> (<a href='#' id='clean_roles'>reset</a>)
+                <label for="role" class="form-label">Roles:</label> (<a href='#' id='clean_roles'>reset</a>)
                 <select multiple class="form-select" id='roles' name="roles[]">
                     @foreach($roles as $role)
                     <option value='{{$role->name}}' {{$role->taken?'selected':''}}>

@@ -21,7 +21,10 @@ class UsersController extends Controller {
 
     public function index()
     {
-        return view('welcome');
+        $users = User::where('id', '!=', 1)->get();
+
+        return view('welcome', compact('users'));
+        // return view('welcome');
     }
 
     //dashboard class
@@ -30,7 +33,10 @@ class UsersController extends Controller {
         // if(!auth()->user()->hasPermissionTo('show_users')) {
         //     abort(401);
         // }
-        return view('users.dashboard');
+        $users = User::where('id', '!=', 1)->get();
+
+        return view('users.dashboard', compact('users'));
+        // return view('users.dashboard');
     }
 
     public function register(Request $request) {
@@ -60,21 +66,6 @@ class UsersController extends Controller {
 
         return redirect('/');
     }
-    
-        // Create new user with default role = 'user'
-        // $user = User::create([
-        //     'name' => $request->name,
-        //     'email' => $request->email,
-        //     'password' => bcrypt($request->password),
-        //     'Role' => 'user', // Default role matches User model
-        // ]);
-    
-        // Log in the new user
-    //     Auth::login($user);
-    
-    //     // Redirect to login page
-    //     return redirect()->route('login')->with('success', 'Registration successful! Please login.');
-    // }
 
     public function login(Request $request) {
         return view('users.login');
@@ -106,16 +97,15 @@ class UsersController extends Controller {
         return redirect()->route('welcome'); // Replace 'welcome' with the name of your welcome page route
     }
 
-    // public function viewProfile() {
-    //     if (!Auth::check()) {
-    //         return redirect()->route('login');
-    //     }
-    //     return view('users.UserProfile');
-    // }
-    
     public function profile(Request $request, User $user = null) {
 
         $user = $user??auth()->user();
+
+        if ($user->id === 1 && !auth()->user()->hasRole('Admin')) {
+            abort(403, 'You are not allowed to view this profile.');
+        }
+
+
         if(auth()->id()!=$user->id) {
             if(!auth()->user()->hasPermissionTo('show_users')) abort(401);
         }
@@ -136,6 +126,11 @@ class UsersController extends Controller {
     public function edit(Request $request, User $user = null) {
    
         $user = $user??auth()->user();
+
+        if ($user->id === 1 && !auth()->user()->hasRole('Admin')) {
+            abort(403, 'You are not allowed to edit this user.');
+        }
+
         if(auth()->id()!=$user?->id) {
             if(!auth()->user()->hasPermissionTo('edit_users')) abort(401);
         }
@@ -187,11 +182,7 @@ class UsersController extends Controller {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/');
-
-
-
-        
+        return redirect('/');    
     }
 
 
