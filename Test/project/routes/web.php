@@ -29,18 +29,20 @@ Route::get('/MiniTest', function(){
     return view('MiniTest');
 });
 
+// Employee Routes
+Route::middleware(['auth', 'role:Employee|Admin'])->group(function () {
+    // Product Management
+    Route::resource('products', ProductController::class);
+    
+    // Customer Management
+    Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
+    Route::post('/customers/{user}/add-credit', [CustomerController::class, 'addCredit'])->name('customers.add-credit');
+});
 
 // ========================= Other Controllers =========================
 
 Route::get('/calculator', [CalculaterController::class,'index']);
 Route::get('/transcript', [TranscriptController::class ,'index']);
-
-// ========================= ProductController =========================
-
-Route::get('products', [ProductController::class, 'list'])->name('products_list');
-Route::get('products/edit/{product?}', [ProductController::class, 'edit'])->name('products_edit');
-Route::post('products/save/{product?}', [ProductController::class, 'save'])->name('products_save');
-Route::get('products/delete/{product}', [ProductController::class, 'delete'])->name('products_delete');
 
 // =========================== Users Controller =========================
 
