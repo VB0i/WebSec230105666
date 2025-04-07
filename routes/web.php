@@ -13,19 +13,21 @@ Route::get('users', [UsersController::class, 'list'])->name('users');
 Route::get('profile/{user?}', [UsersController::class, 'profile'])->name('profile');
 Route::get('users/edit/{user?}', [UsersController::class, 'edit'])->name('users_edit');
 Route::post('users/save/{user}', [UsersController::class, 'save'])->name('users_save');
-Route::get('users/delete/{user}', [UsersController::class, 'delete'])->name('users_delete');
+Route::get('users/users_delete/{user}', [UsersController::class, 'delete'])->name('users_delete');
 Route::get('users/edit_password/{user?}', [UsersController::class, 'editPassword'])->name('edit_password');
 Route::post('users/save_password/{user}', [UsersController::class, 'savePassword'])->name('save_password');
-Route::post('/users/{user}/add-credit', [UsersController::class, 'addCredit'])->name('users.addCredit');
 Route::get('/customers', [UsersController::class, 'list'])->name('customers.list');
-
+Route::get('/users/{user}/add_credit', [UsersController::class, 'showAddCreditForm'])->name('users.add_credit')->middleware('can:add_credit');
+Route::post('/users/{user}/add_credit', [UsersController::class, 'addCredit'])->name('users.add_credit')->middleware('can:add_credit');
+Route::get('/users', [UsersController::class, 'list'])->name('users.list');
 
 
 Route::get('products', [ProductsController::class, 'list'])->name('products_list');
 Route::get('products/edit/{product?}', [ProductsController::class, 'edit'])->name('products_edit');
 Route::post('products/save/{product?}', [ProductsController::class, 'save'])->name('products_save');
 Route::get('products/delete/{product}', [ProductsController::class, 'delete'])->name('products_delete');
-Route::post('/products/{product}/buy', [ProductsController::class, 'buy'])->name('products.buy');
+Route::post('/products/{product}/buy', [ProductsController::class, 'buy'])->name('products_buy');
+Route::get('products/{product}/buy', [ProductsController::class, 'buy'])->name('products_buy');
 
 
 Route::get('/', function () {

@@ -160,7 +160,7 @@ class UsersController extends Controller {
 
     public function delete(Request $request, User $user) {
 
-        if(!auth()->user()->hasPermissionTo('delete_users')) abort(401);
+        if(!auth()->user()->hasPermissionTo('users_delete')) abort(401);
 
         //$user->delete();
 
@@ -202,25 +202,36 @@ class UsersController extends Controller {
         return redirect(route('profile', ['user'=>$user->id]));
     }
     public function addCredit(Request $request, User $user)
-    {
-        // Only employees with this permission can add credit
-        if (!auth()->user()->hasPermissionTo('edit_users')) {
-            abort(401);
-        }
+{
+    if (!auth()->user()->can('add_credit')) {
+        abort(403);
+    }
 
-        $request->validate([
-            'amount' => 'required|numeric|min:0.01'
-        ]);
+    $request->validate([
+        'amount' => 'required|numeric|min:0.01'
+    ]);
 
-        // Make sure the target user is a Customer
-        if (!$user->hasRole('Customer')) {
-            return redirect()->back()->withErrors('You can only add credit to customers.');
-        }
+    if (!$user->hasRole('Customer')) {
+        return redirect()->route('users.list')->with('error', 'Can only add credit to customers');
+    }
 
-        $user->credit += $request->amount;
-        $user->save();
+    $user->credit += $request->amount;
+    $user->save();
 
-        return redirect()->back()->with('success', 'Credit added successfully.');
+    return redirect()->route('users.list')->with('success', "Added {$request->amount} credit to {$user->name}'s account.");
+}
+
+public function showAddCreditForm(User $user)
+{
+    if (!auth()->user()->can('add_credit')) {
+        abort(403);
+    }
+
+    if (!$user->hasRole('Customer')) {
+        return redirect()->route('users_list')->with('error', 'Can only add credit to customers');
+    }
+
+    return view('users.add_credit', compact('user'));
 }
 
 } 

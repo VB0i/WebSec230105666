@@ -43,6 +43,12 @@
             <textarea type="text" class="form-control" placeholder="Description" name="description" required>{{$product->description}}</textarea>
         </div>
     </div>
+    <div class="row mb-2">
+        <div class="col">
+            <label for="name" class="form-label">Quantity:</label>
+            <input type="text" class="form-control" placeholder="Quantity" name="quantity" required value="{{$product->quantity}}">
+        </div>
+    </div>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 @endsection

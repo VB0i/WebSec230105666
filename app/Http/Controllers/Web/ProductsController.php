@@ -55,6 +55,8 @@ class ProductsController extends Controller {
 	        'model' => ['required', 'string', 'max:256'],
 	        'description' => ['required', 'string', 'max:1024'],
 	        'price' => ['required', 'numeric'],
+	        'photo' => ['required', 'string', 'max:256'],
+	        'quantity' => ['required', 'integer', 'min:0'],
 	    ]);
 
 		$product = $product??new Product();
@@ -73,29 +75,34 @@ class ProductsController extends Controller {
 		return redirect()->route('products_list');
 	}
 	public function buy(Request $request, Product $product)
-	{
-		$user = auth()->user();
+{
+    $user = auth()->user();
 
-		if (!$user) return redirect('/login');
+    if (!$user) return redirect('/login');
 
-		if ($product->quantity < 1) {
-			return back()->with('error', 'Product is out of stock.');
-		}
+    if ($product->quantity < 1) {
+        return back()->with('error', 'Product is out of stock.');
+    }
 
-		if ($user->credit < $product->price) {
-			return back()->with('error', 'Insufficient credit.');
-		}
+    if ($user->credit < $product->price) {
+        return back()->with('error', 'Insufficient credit.');
+    }
 
-		// Deduct credit and update product
-		$user->credit -= $product->price;
-		$user->save();
+    // Deduct credit and reduce stock
+    $user->credit -= $product->price;
+    $user->save();
 
-		$product->quantity -= 1;
-		$product->save();
+    $product->quantity -= 1;
 
-		// Optionally: store in purchases table (if you have one)
+    // Optional: mark as out of stock when quantity hits 0
+    // if ($product->quantity == 0) {
+    //     $product->stock = false;
+    // }
 
-		return back()->with('success', 'Product purchased successfully.');
+    $product->save();
+
+    return back()->with('success', 'Product purchased successfully.');
 	}
+
 
 } 

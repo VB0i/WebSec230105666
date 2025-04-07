@@ -49,10 +49,18 @@
           @can('admin_users')
           <a class="btn btn-primary" href='{{route('edit_password', [$user->id])}}'>Change Password</a>
           @endcan
-          @can('delete_users')
+          @can('users_delete')
           <a class="btn btn-danger" href='{{route('users_delete', [$user->id])}}'>Delete</a>
           @endcan
-        </td>
+          @can('add_credit')
+            @if($user->hasRole('Customer'))
+              <a href="{{ route('users.add_credit', $user->id) }}" class="btn btn-success">
+                  Add Credit
+              </a>
+            @endif
+          @endcan
+
+        </td> 
       </tr>
       @endforeach
     </table>

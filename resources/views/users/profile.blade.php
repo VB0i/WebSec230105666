@@ -62,6 +62,7 @@
             <div class="col col-2">
                 <a href="{{route('users_edit', $user->id)}}" class="btn btn-success form-control">Edit</a>
             </div>
+            
             @endif
         </div>
     </div>
