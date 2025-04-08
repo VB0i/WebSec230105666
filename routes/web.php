@@ -28,6 +28,7 @@ Route::post('products/save/{product?}', [ProductsController::class, 'save'])->na
 Route::get('products/delete/{product}', [ProductsController::class, 'delete'])->name('products_delete');
 Route::post('/products/{product}/buy', [ProductsController::class, 'buy'])->name('products_buy');
 Route::get('products/{product}/buy', [ProductsController::class, 'buy'])->name('products_buy');
+Route::get('/purchase-history', [ProductsController::class, 'history'])->name('purchase_history');
 
 
 Route::get('/', function () {

@@ -3,10 +3,11 @@ namespace App\Http\Controllers\Web;
 
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\BoughtProduct;
 
 class ProductsController extends Controller {
 
@@ -75,34 +76,65 @@ class ProductsController extends Controller {
 		return redirect()->route('products_list');
 	}
 	public function buy(Request $request, Product $product)
+	{
+		$user = auth()->user();
+	
+		if (!$user) {
+			return redirect('/login');
+		}
+	
+		// Check if the product is in stock
+		if ($product->quantity < 1) {
+			return back()->with('error', 'Product is out of stock.');
+		}
+	
+		// Check if the user has enough credit
+		if ($user->credit < $product->price) {
+			return back()->with('error', 'Insufficient credit.');
+		}
+	
+		try {
+			// Deduct credit from the user
+			$user->credit -= $product->price;
+			$user->save();
+	
+			// Reduce product stock
+			$product->quantity -= 1;
+			$product->save();
+	
+			// Create an entry in the bought_products table using Eloquent (no DB facade)
+			BoughtProduct::create([
+				'user_id' => $user->id,
+				'product_id' => $product->id,
+				'product_name' => $product->name, // Save the product name
+				'product_price' => $product->price, // Save the product price
+				'created_at' => now(), // Store the purchase date
+			]);
+	
+			return back()->with('success', 'Product purchased successfully.');
+		} catch (\Exception $e) {
+			// Log the error (optional)
+			\Log::error('Purchase failed: ' . $e->getMessage());
+	
+			return back()->with('error', 'An error occurred while processing your purchase.');
+		}
+	}
+	
+
+	public function history()
 {
     $user = auth()->user();
 
-    if (!$user) return redirect('/login');
+    // Get all purchases (bought products) with product data
+    $purchases = BoughtProduct::where('user_id', $user->id)
+        ->with(['product']) // eager load the product relationship
+        ->orderBy('created_at', 'desc')
+        ->get();
 
-    if ($product->quantity < 1) {
-        return back()->with('error', 'Product is out of stock.');
-    }
+    return view('products.history', compact('purchases'));
+}
 
-    if ($user->credit < $product->price) {
-        return back()->with('error', 'Insufficient credit.');
-    }
 
-    // Deduct credit and reduce stock
-    $user->credit -= $product->price;
-    $user->save();
-
-    $product->quantity -= 1;
-
-    // Optional: mark as out of stock when quantity hits 0
-    // if ($product->quantity == 0) {
-    //     $product->stock = false;
-    // }
-
-    $product->save();
-
-    return back()->with('success', 'Product purchased successfully.');
-	}
 
 
 } 

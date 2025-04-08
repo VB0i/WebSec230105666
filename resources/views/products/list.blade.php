@@ -79,19 +79,19 @@
                         <tr><th>Quantity</th><td>{{ $product->quantity }}</td></tr>
                     </table>
                     @if($product->quantity > 0)
-    @if(auth()->user()->hasRole('Customer'))
-        @if((auth()->user()->credit ?? 0) >= $product->price)
-            <form method="POST" action="{{ route('products_buy', $product->id) }}">
-                @csrf
-                <button type="submit" class="btn btn-primary mt-2">Buy</button>
-            </form>
-        @else
-            <div class="text-danger mt-2">Insufficient credit</div>
-        @endif
-    @endif
-@else
-    <div class="text-danger mt-2">Out of Stock</div>
-@endif
+                    @if(auth()->user()->hasRole('Customer'))
+                        @if((auth()->user()->credit ?? 0) >= $product->price)
+                            <form method="POST" action="{{ route('products_buy', $product->id) }}">
+                                @csrf
+                                <button type="submit" class="btn btn-primary mt-2">Buy</button>
+                            </form>
+                        @else
+                            <div class="text-danger mt-2">Insufficient credit</div>
+                        @endif
+                    @endif
+                @else
+                    <div class="text-danger mt-2">Out of Stock</div>
+                @endif
                 </div>
             </div>
         </div>

@@ -14,28 +14,31 @@
                 <a class="nav-link" href="./multable">Multiplication Table</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{route('products_list')}}">Products</a>
+                <a class="nav-link" href="{{ route('products_list') }}">Products</a>
             </li>
             <!-- @can('show_users')
             <li class="nav-item">
                 <a class="nav-line" href="{{route('users.list')}}">Users</a>
             </li>
             @endcan -->
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('purchase_history') }}">Purchase History</a>
+            </li> <!-- New page added here -->
         </ul>
         <ul class="navbar-nav">
             @auth
             <li class="nav-item">
-                <a class="nav-link" href="{{route('profile')}}">{{auth()->user()->name}}</a>
+                <a class="nav-link" href="{{ route('profile') }}">{{ auth()->user()->name }}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{route('do_logout')}}">Logout</a>
+                <a class="nav-link" href="{{ route('do_logout') }}">Logout</a>
             </li>
             @else
             <li class="nav-item">
-                <a class="nav-link" href="{{route('login')}}">Login</a>
+                <a class="nav-link" href="{{ route('login') }}">Login</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{route('register')}}">Register</a>
+                <a class="nav-link" href="{{ route('register') }}">Register</a>
             </li>
             @endauth
         </ul>
