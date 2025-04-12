@@ -234,4 +234,17 @@ public function showAddCreditForm(User $user)
     return view('users.add_credit', compact('user'));
 }
 
+public function resetCredit(User $user)
+    {
+        if (!auth()->user()->can('reset_credit')) {
+            abort(403);
+        }
+        if (!$user->hasRole('Customer')) {
+            return redirect()->route('users.list')->with('error', "can only reset credit for customers");
+        }
+        $user->credit = 0;
+        $user->save();
+        return redirect()->route('users.list')->with('success');
+    }
+
 } 

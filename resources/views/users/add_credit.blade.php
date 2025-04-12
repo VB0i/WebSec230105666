@@ -23,6 +23,8 @@
                 <div class="d-flex justify-content-end gap-2">
                     <a href="{{ route('users.list') }}" class="btn btn-secondary">Cancel</a>
                     <button type="submit" class="btn btn-primary">OK</button>
+                    
+
                 </div>
             </form>
         </div>

@@ -28,6 +28,7 @@
           <th scope="col">#</th>
           <th scope="col">Name</th>
           <th scope="col">Email</th>
+          <th scope="col">Credit Balance</th>
           <th scope="col">Roles</th>
           <th scope="col"></th>
         </tr>
@@ -37,6 +38,7 @@
         <td scope="col">{{$user->id}}</td>
         <td scope="col">{{$user->name}}</td>
         <td scope="col">{{$user->email}}</td>
+        <td scope="col"><span class="badge bg-primary">{{$user->credit}}</span></td>
         <td scope="col">
           @foreach($user->roles as $role)
             <span class="badge bg-primary">{{$role->name}}</span>
@@ -51,6 +53,9 @@
           @endcan
           @can('users_delete')
           <a class="btn btn-danger" href='{{route('users_delete', [$user->id])}}'>Delete</a>
+          @endcan
+          @can('reset_credit')
+              <a class="btn btn-danger" href='{{route('users.reset_credit', [$user->id])}}'>Reset Credit</a>
           @endcan
           @can('add_credit')
             @if($user->hasRole('Customer'))
