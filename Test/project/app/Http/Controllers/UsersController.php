@@ -10,6 +10,9 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\VerificationEmail;
 // use App\Http\Controllers\Role;
 
 class UsersController extends Controller {
@@ -64,6 +67,10 @@ class UsersController extends Controller {
 	    $user->password = bcrypt($request->password); //Secure
 	    $user->save();
 
+        $title = "Verification Link";
+        $token = Crypt::encryptString(json_encode(['id' => $user->id, 'email' => $user->email]));
+        $link = route("verify", ['token' => $token]);
+        Mail::to($user->email)->send(new VerificationEmail($link, $user->name));
         return redirect('/');
     }
 
@@ -72,29 +79,38 @@ class UsersController extends Controller {
     }
 
     public function doLogin(Request $request) {
+        if(!Auth::attempt(['email' => $request->email, 'password' => $request->password]))
+            return redirect()->back()->withInput($request->input())->withErrors('Invalid login information.');
+
+        $user = User::where('email', $request->email)->first();
+        Auth::setUser($user);
+
+        if(!$user->email_verified_at)
+            return redirect()->back()->withInput($request->input())->withErrors('Your email is not verified.');
+        return redirect('/');
         // Validate the login credentials
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+        // $credentials = $request->validate([
+        //     'email' => ['required', 'email'],
+        //     'password' => ['required'],
+        // ]);
     
         // Attempt to authenticate the user
-        if (!Auth::attempt($credentials)) {
-            return redirect()->back()
-                ->withInput($request->only('email'))
-                ->withErrors(['email' => 'Invalid login credentials.']);
-        }
+        // if (!Auth::attempt($credentials)) {
+        //     return redirect()->back()
+        //         ->withInput($request->only('email'))
+        //         ->withErrors(['email' => 'Invalid login credentials.']);
+        // }
     
         // Get the authenticated user
-        $user = Auth::user();
+        // $user = Auth::user();
         
-        // Redirect based on user role
-        if ($user->Role === 'admin') {
-            return redirect('/'); // Redirect admin to home page
-        }
+        // // Redirect based on user role
+        // if ($user->Role === 'admin') {
+        //     return redirect('/'); // Redirect admin to home page
+        // }
         
         // Redirect regular users to the welcome page
-        return redirect()->route('welcome'); // Replace 'welcome' with the name of your welcome page route
+        // return redirect()->route('welcome'); // Replace 'welcome' with the name of your welcome page route
     }
 
     public function profile(Request $request, User $user = null) {
@@ -210,4 +226,14 @@ public function savePassword(Request $request, User $user) {
 
     return redirect(route('profile', ['user'=>$user->id]));
 }
+    public function verify(Request $request) {
+    
+        $decryptedData = json_decode(Crypt::decryptString($request->token), true);
+        $user = User::find($decryptedData['id']);
+        if(!$user) abort(401);
+        $user->email_verified_at = Carbon::now();
+        $user->save();
+
+        return view('users.verified', compact('user'));
+    }
 }
