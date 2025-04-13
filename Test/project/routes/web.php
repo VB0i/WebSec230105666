@@ -55,3 +55,6 @@ Route::get('UserProfile/{user?}', [UsersController::class,'profile'])->name('pro
 Route::get('users/edit/{user?}', [UsersController::class, 'edit'])->name('users_edit');
 Route::post('users/save/{user}', [UsersController::class, 'save'])->name('users_save');
 Route::get('users/dashboard', [UsersController::class, 'dashboard'])->name('dashboard');
+Route::get('verify', [UsersController::class, 'verify'])->name('verify');
+Route::get('/auth/google', [UsersController::class, 'redirectToGoogle'])->name('login_with_google');
+Route::get('/auth/google/callback', [UsersController::class, 'handleGoogleCallback']);
