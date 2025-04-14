@@ -252,4 +252,25 @@ public function savePassword(Request $request, User $user) {
 
         return view('users.verified', compact('user'));
     }
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')->redirect();
+    }
+    public function handleGoogleCallback() {
+        try {
+            $googleUser = Socialite::driver('google')->user();
+            $user = User::updateOrCreate([
+                'google_id' => $googleUser->id,
+            ], [
+                'name' => $googleUser->name,
+                'email' => $googleUser->email,
+                'google_token' => $googleUser->token,
+                'google_refresh_token' => $googleUser->refreshToken,
+            ]);
+            Auth::login($user);
+            return redirect('/');
+        } catch (\Exception $e) {
+            return redirect('/login')->with('error', 'Google login failed.'); // Handle errors
+        }
+    }
 }
