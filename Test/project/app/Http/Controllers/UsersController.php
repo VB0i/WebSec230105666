@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Artisan;
@@ -253,9 +254,10 @@ public function savePassword(Request $request, User $user) {
         return view('users.verified', compact('user'));
     }
     public function redirectToGoogle()
-    {
-        return Socialite::driver('google')->redirect();
-    }
+{
+    \Log::info('Redirecting to Google with URL: ' . Socialite::driver('google')->redirect()->getTargetUrl());
+    return Socialite::driver('google')->redirect();
+}
     public function handleGoogleCallback() {
         try {
             $googleUser = Socialite::driver('google')->user();
