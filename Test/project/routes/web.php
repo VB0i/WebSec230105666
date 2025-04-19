@@ -60,8 +60,9 @@ Route::get('verify', [UsersController::class, 'verify'])->name('verify');
 Route::get('/auth/google', [UsersController::class, 'redirectToGoogle'])->name('login_with_google');
 Route::get('/auth/google/callback', [UsersController::class, 'handleGoogleCallback']);
 
-Route::get('forgot_password', [UsersController::class, 'showForgotPasswordForm'])->name('password.request');
-Route::post('forgot_password', [UsersController::class, 'sendResetLinkEmail'])->name('password.email');
+// Password reset routes
+Route::get('forgot-password', [UsersController::class, 'showForgotPasswordForm'])->name('password.request');
+Route::post('forgot-password', [UsersController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::get('reset-password/{token}', [UsersController::class, 'showResetForm'])->name('password.reset');
 Route::post('reset-password', [UsersController::class, 'reset'])->name('password.update');
 

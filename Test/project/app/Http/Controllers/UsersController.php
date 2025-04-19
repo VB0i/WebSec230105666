@@ -31,32 +31,20 @@ public function sendResetLinkEmail(Request $request)
 {
     $request->validate(['email' => 'required|email']);
     
+    // Check if email exists first
     $user = User::where('email', $request->email)->first();
     
     if (!$user) {
-        return back()->withErrors(['email' => 'We could not find a user with that email address.']);
+        return back()->withErrors(['email' => 'If this email exists in our system, we will send a reset link.']);
     }
     
-    // Generate temporary password
-    $temporaryPassword = Str::random(12); // 12-character random password
-    
-    // Update user with temporary password
-    $user->password = bcrypt($temporaryPassword);
-    $user->is_temp_password = true; // Add this column to users table
-    $user->save();
-    
-    // Send email with temporary password
-    try {
-        Mail::to($user->email)->send(new \App\Mail\TemporaryPasswordEmail(
-            $temporaryPassword,
-            $user->name
-        ));
-    } catch (\Exception $e) {
-        \Log::error("Temporary password email failed: " . $e->getMessage());
-        return back()->withErrors(['email' => 'Failed to send email. Please try again later.']);
-    }
-    
-    return back()->with('status', 'We have emailed you a temporary password!');
+    $status = Password::sendResetLink(
+        $request->only('email')
+    );
+
+    return $status === Password::RESET_LINK_SENT
+        ? back()->with('status', __($status))
+        : back()->withErrors(['email' => __($status)]);
 }
 
     public function index()
@@ -304,9 +292,10 @@ public function doLogout()
 
 public function showResetForm(Request $request, $token = null)
 {
-    return view('users.reset_password')->with(
-        ['token' => $token, 'email' => $request->email]
-    );
+    return view('auth.reset-password', [
+        'token' => $token,
+        'email' => $request->email
+    ]);
 }
 
 public function reset(Request $request)
@@ -314,7 +303,7 @@ public function reset(Request $request)
     $request->validate([
         'token' => 'required',
         'email' => 'required|email',
-        'password' => 'required|confirmed|min:8',
+        'password' => 'required|confirmed|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/',
     ]);
 
     $status = Password::reset(
