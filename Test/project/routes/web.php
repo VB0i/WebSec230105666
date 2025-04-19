@@ -65,6 +65,8 @@ Route::post('forgot_password', [UsersController::class, 'sendResetLinkEmail'])->
 Route::get('reset-password/{token}', [UsersController::class, 'showResetForm'])->name('password.reset');
 Route::post('reset-password', [UsersController::class, 'reset'])->name('password.update');
 
+Route::get('password/change', [UsersController::class, 'showChangePasswordForm'])->name('password.change');
+Route::post('password/change', [UsersController::class, 'changePassword'])->name('password.update');
 
 use Illuminate\Support\Facades\Mail;
 

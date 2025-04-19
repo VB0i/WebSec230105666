@@ -27,18 +27,37 @@ class UsersController extends Controller {
 {
     return view('users.forgot_password');
 }
-    public function sendResetLinkEmail(Request $request)
-    {
-        $request->validate(['email' => 'required|email']);
-
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
-
-        return $status === Password::RESET_LINK_SENT
-            ? back()->with('status', __($status))
-            : back()->withErrors(['email' => __($status)]);
+public function sendResetLinkEmail(Request $request)
+{
+    $request->validate(['email' => 'required|email']);
+    
+    $user = User::where('email', $request->email)->first();
+    
+    if (!$user) {
+        return back()->withErrors(['email' => 'We could not find a user with that email address.']);
     }
+    
+    // Generate temporary password
+    $temporaryPassword = Str::random(12); // 12-character random password
+    
+    // Update user with temporary password
+    $user->password = bcrypt($temporaryPassword);
+    $user->is_temp_password = true; // Add this column to users table
+    $user->save();
+    
+    // Send email with temporary password
+    try {
+        Mail::to($user->email)->send(new \App\Mail\TemporaryPasswordEmail(
+            $temporaryPassword,
+            $user->name
+        ));
+    } catch (\Exception $e) {
+        \Log::error("Temporary password email failed: " . $e->getMessage());
+        return back()->withErrors(['email' => 'Failed to send email. Please try again later.']);
+    }
+    
+    return back()->with('status', 'We have emailed you a temporary password!');
+}
 
     public function index()
     {
@@ -183,21 +202,37 @@ class UsersController extends Controller {
 
     
 
-    public function doLogin(Request $request) {
-        if(!Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            return redirect()->back()->withInput($request->input())->withErrors('Invalid login information.');
-        }
+    public function doLogin(Request $request) 
+{
+    $credentials = $request->only('email', 'password');
     
-        $user = User::where('email', $request->email)->first();
-        
-        // Skip email verification check for Google-authenticated users
-        if(!$user->email_verified_at && empty($user->google_id)) {
-            return redirect()->back()->withInput($request->input())->withErrors('Your email is not verified.');
-        }
-        
-        Auth::setUser($user);
-        return redirect('/');
+    if (!Auth::attempt($credentials)) {
+        return redirect()->back()
+            ->withInput($request->input())
+            ->withErrors('Invalid login information.');
     }
+    
+    $user = Auth::user();
+    
+    // Check if user logged in with temporary password
+    if ($user->is_temp_password) {
+        // Store user ID in session to force password change
+        session(['force_password_change' => $user->id]);
+        
+        // Redirect to change password page
+        return redirect()->route('password.change');
+    }
+    
+    // Skip email verification check for Google-authenticated users
+    if (!$user->email_verified_at && empty($user->google_id)) {
+        Auth::logout();
+        return redirect()->back()
+            ->withInput($request->input())
+            ->withErrors('Your email is not verified.');
+    }
+    
+    return redirect('/');
+}
 
 
 public function savePassword(Request $request, User $user) {
@@ -295,7 +330,40 @@ public function reset(Request $request)
         ? redirect()->route('login')->with('status', __($status))
         : back()->withErrors(['email' => [__($status)]]);
 }
+public function showChangePasswordForm()
+{
+    if (!session('force_password_change')) {
+        return redirect('/');
+    }
+    
+    return view('users.change_password');
+}
 
+public function changePassword(Request $request)
+{
+    if (!session('force_password_change')) {
+        return redirect('/');
+    }
+    
+    $request->validate([
+        'password' => 'required|confirmed|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/',
+    ]);
+    
+    $user = User::find(session('force_password_change'));
+    
+    if (!$user) {
+        return redirect('/');
+    }
+    
+    $user->password = bcrypt($request->password);
+    $user->is_temp_password = false;
+    $user->save();
+    
+    // Clear the session
+    session()->forget('force_password_change');
+    
+    return redirect('/')->with('success', 'Password changed successfully!');
+}
 
 
 }
