@@ -56,7 +56,26 @@ Route::get('users/edit/{user?}', [UsersController::class, 'edit'])->name('users_
 Route::post('users/save/{user}', [UsersController::class, 'save'])->name('users_save');
 Route::get('users/dashboard', [UsersController::class, 'dashboard'])->name('dashboard');
 Route::get('verify', [UsersController::class, 'verify'])->name('verify');
+
 Route::get('/auth/google', [UsersController::class, 'redirectToGoogle'])->name('login_with_google');
 Route::get('/auth/google/callback', [UsersController::class, 'handleGoogleCallback']);
+
 Route::get('forgot_password', [UsersController::class, 'showForgotPasswordForm'])->name('password.request');
 Route::post('forgot_password', [UsersController::class, 'sendResetLinkEmail'])->name('password.email');
+
+
+
+use Illuminate\Support\Facades\Mail;
+
+Route::get('/test-email', function() {
+    try {
+        Mail::raw('This is a test email body', function($message) {
+            $message->to('zezosuliman95@gmail.com')
+                    ->subject('Test Email from Laravel');
+        });
+        
+        return 'Email sent successfully! Check your inbox.';
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
+});

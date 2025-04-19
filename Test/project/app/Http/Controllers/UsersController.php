@@ -9,13 +9,14 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Foundation\Validation\ValidatesRequests;
-use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\VerificationEmail;
+use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 // use App\Http\Controllers\Role;
 
@@ -64,71 +65,42 @@ class UsersController extends Controller {
     }
 
     public function doRegister(Request $request) {
-
-    	try {
-    		$this->validate($request, [
-	        'name' => ['required', 'string', 'min:5'],
-	        'email' => ['required', 'email', 'unique:users'],
-	        'password' => ['required', 'confirmed', Password::min(8)->numbers()->letters()->mixedCase()->symbols()],
-	    	]);
-    	}
-    	catch(\Exception $e) {
-
-    		return redirect()->back()->withInput($request->input())->withErrors('Invalid registration information.');
-    	}
-
-    	
-    	$user =  new User();
-	    $user->name = $request->name;
-	    $user->email = $request->email;
-	    $user->password = bcrypt($request->password); //Secure
-	    $user->save();
-
-        $title = "Verification Link";
-        $token = Crypt::encryptString(json_encode(['id' => $user->id, 'email' => $user->email]));
-        $link = route("verify", ['token' => $token]);
-        Mail::to($user->email)->send(new VerificationEmail($link, $user->name));
-        return redirect('/');
+        // Validation
+        $validated = $request->validate([
+            'name' => 'required|string|min:5',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|confirmed|string|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/'
+        ]);
+    
+        // Create user
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => bcrypt($validated['password']), // Always hash passwords
+        ]);
+    
+        // Send verification email
+        try {
+            $token = Crypt::encryptString(json_encode([
+                'id' => $user->id,
+                'email' => $user->email
+            ]));
+            Mail::to($user->email)->send(new VerificationEmail(
+                route('verify', ['token' => $token]),
+                $user->name
+            ));
+        } catch (\Exception $e) {
+            \Log::error("Verification email failed: " . $e->getMessage());
+     
+        }
+    
+        return redirect('/')->with('success', 'Account created! Check your email to verify.');
     }
 
     public function login(Request $request) {
         return view('users.login');
     }
 
-    public function doLogin(Request $request) {
-        if(!Auth::attempt(['email' => $request->email, 'password' => $request->password]))
-            return redirect()->back()->withInput($request->input())->withErrors('Invalid login information.');
-
-        $user = User::where('email', $request->email)->first();
-        Auth::setUser($user);
-
-        if(!$user->email_verified_at)
-            return redirect()->back()->withInput($request->input())->withErrors('Your email is not verified.');
-        return redirect('/');
-        // Validate the login credentials
-        // $credentials = $request->validate([
-        //     'email' => ['required', 'email'],
-        //     'password' => ['required'],
-        // ]);
-    
-        // Attempt to authenticate the user
-        // if (!Auth::attempt($credentials)) {
-        //     return redirect()->back()
-        //         ->withInput($request->only('email'))
-        //         ->withErrors(['email' => 'Invalid login credentials.']);
-        // }
-    
-        // Get the authenticated user
-        // $user = Auth::user();
-        
-        // // Redirect based on user role
-        // if ($user->Role === 'admin') {
-        //     return redirect('/'); // Redirect admin to home page
-        // }
-        
-        // Redirect regular users to the welcome page
-        // return redirect()->route('welcome'); // Replace 'welcome' with the name of your welcome page route
-    }
 
     public function profile(Request $request, User $user = null) {
 
@@ -211,11 +183,20 @@ class UsersController extends Controller {
 
     
 
-    public function doLogout(Request $request) {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect('/');    
+    public function doLogin(Request $request) {
+        if(!Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+            return redirect()->back()->withInput($request->input())->withErrors('Invalid login information.');
+        }
+    
+        $user = User::where('email', $request->email)->first();
+        
+        // Skip email verification check for Google-authenticated users
+        if(!$user->email_verified_at && empty($user->google_id)) {
+            return redirect()->back()->withInput($request->input())->withErrors('Your email is not verified.');
+        }
+        
+        Auth::setUser($user);
+        return redirect('/');
     }
 
 
@@ -253,26 +234,38 @@ public function savePassword(Request $request, User $user) {
 
         return view('users.verified', compact('user'));
     }
+    
     public function redirectToGoogle()
-{
-    \Log::info('Redirecting to Google with URL: ' . Socialite::driver('google')->redirect()->getTargetUrl());
-    return Socialite::driver('google')->redirect();
-}
-    public function handleGoogleCallback() {
-        try {
-            $googleUser = Socialite::driver('google')->user();
-            $user = User::updateOrCreate([
-                'google_id' => $googleUser->id,
-            ], [
-                'name' => $googleUser->name,
-                'email' => $googleUser->email,
-                'google_token' => $googleUser->token,
-                'google_refresh_token' => $googleUser->refreshToken,
-            ]);
-            Auth::login($user);
-            return redirect('/');
-        } catch (\Exception $e) {
-            return redirect('/login')->with('error', 'Google login failed.'); // Handle errors
-        }
+    {
+        return Socialite::driver('google')->redirect();
     }
+    
+    public function handleGoogleCallback()
+    {
+        $googleUser = Socialite::driver('google')->user();
+    
+        $user = User::updateOrCreate(
+            ['email' => $googleUser->getEmail()],
+            [
+                'name' => $googleUser->getName(),
+                'google_id' => $googleUser->getId(),
+                'avatar' => $googleUser->getAvatar(),
+                'google_token' => $googleUser->token,
+                'google_refresh_token' => $googleUser->refreshToken
+            ]
+        );
+        
+    
+        Auth::login($user);
+    
+        return redirect()->intended('/'); // or wherever you want to go after login
+    }
+
+public function doLogout()
+{
+    Auth::logout(); // Logs the user out of the application
+    return redirect('/'); // Redirects to the home page after logout
+}
+
+
 }
