@@ -62,7 +62,8 @@ Route::get('/auth/google/callback', [UsersController::class, 'handleGoogleCallba
 
 Route::get('forgot_password', [UsersController::class, 'showForgotPasswordForm'])->name('password.request');
 Route::post('forgot_password', [UsersController::class, 'sendResetLinkEmail'])->name('password.email');
-
+Route::get('reset-password/{token}', [UsersController::class, 'showResetForm'])->name('password.reset');
+Route::post('reset-password', [UsersController::class, 'reset'])->name('password.update');
 
 
 use Illuminate\Support\Facades\Mail;
