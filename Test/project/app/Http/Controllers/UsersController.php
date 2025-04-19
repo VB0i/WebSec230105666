@@ -202,15 +202,6 @@ public function sendResetLinkEmail(Request $request)
     
     $user = Auth::user();
     
-    // Check if user logged in with temporary password
-    if ($user->is_temp_password) {
-        // Store user ID in session to force password change
-        session(['force_password_change' => $user->id]);
-        
-        // Redirect to change password page
-        return redirect()->route('password.change');
-    }
-    
     // Skip email verification check for Google-authenticated users
     if (!$user->email_verified_at && empty($user->google_id)) {
         Auth::logout();
@@ -319,40 +310,7 @@ public function reset(Request $request)
         ? redirect()->route('login')->with('status', __($status))
         : back()->withErrors(['email' => [__($status)]]);
 }
-public function showChangePasswordForm()
-{
-    if (!session('force_password_change')) {
-        return redirect('/');
-    }
-    
-    return view('users.change_password');
-}
 
-public function changePassword(Request $request)
-{
-    if (!session('force_password_change')) {
-        return redirect('/');
-    }
-    
-    $request->validate([
-        'password' => 'required|confirmed|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/',
-    ]);
-    
-    $user = User::find(session('force_password_change'));
-    
-    if (!$user) {
-        return redirect('/');
-    }
-    
-    $user->password = bcrypt($request->password);
-    $user->is_temp_password = false;
-    $user->save();
-    
-    // Clear the session
-    session()->forget('force_password_change');
-    
-    return redirect('/')->with('success', 'Password changed successfully!');
-}
 
 
 }
