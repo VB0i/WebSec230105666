@@ -67,17 +67,3 @@ Route::get('reset-password/{token}', [UsersController::class, 'showResetForm'])-
 Route::post('reset-password', [UsersController::class, 'reset'])->name('password.update');
 
 
-use Illuminate\Support\Facades\Mail;
-
-Route::get('/test-email', function() {
-    try {
-        Mail::raw('This is a test email body', function($message) {
-            $message->to('zezosuliman95@gmail.com')
-                    ->subject('Test Email from Laravel');
-        });
-        
-        return 'Email sent successfully! Check your inbox.';
-    } catch (\Exception $e) {
-        return 'Error: ' . $e->getMessage();
-    }
-});

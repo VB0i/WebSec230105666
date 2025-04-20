@@ -7,7 +7,6 @@
             <div class="card">
                 <div class="card-header bg-primary text-white">
                     <h3 class="mb-0"><i class="fa-solid fa-gauge"></i> Dashboard</h3>
-                    
                 </div>
                 <div class="card-body">
                     <div class="row mb-4">
@@ -31,13 +30,13 @@
 
                     <!-- Users Management Card -->
                     <div class="card mb-4">
-                        <div class="card-header bg-light">
+                        <div class="card-header">
                             <h5 class="mb-0"><i class="fas fa-users-cog"></i> User Management</h5>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-hover table-striped">
-                                    <thead class="table-primary">
+                                <table class="table table-hover">
+                                    <thead>
                                         <tr>
                                             <th>ID</th>
                                             <th>Name</th>
@@ -77,13 +76,13 @@
 
                     <!-- Products Management Card -->
                     <div class="card">
-                        <div class="card-header bg-light">
+                        <div class="card-header">
                             <h5 class="mb-0"><i class="fas fa-box"></i> Product Management</h5>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-hover table-striped">
-                                    <thead class="table-success">
+                                <table class="table table-hover">
+                                    <thead>
                                         <tr>
                                             <th>ID</th>
                                             <th>Name</th>
@@ -130,8 +129,30 @@
 </div>
 
 <style>
-.card {
+[data-bs-theme="light"] .card {
     box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    background-color: #fff;
+}
+
+[data-bs-theme="dark"] .card {
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(0, 0, 0, 0.3);
+    background-color: #2b3035;
+}
+
+[data-bs-theme="dark"] .card-header {
+    background-color: #212529;
+    border-bottom: 1px solid #373b3e;
+}
+
+[data-bs-theme="dark"] .table {
+    color: #e9ecef;
+}
+
+[data-bs-theme="dark"] .table-hover tbody tr:hover {
+    background-color: rgba(255,255,255,.075);
+}
+
+.card {
     margin-bottom: 1.5rem;
     transition: all 0.3s ease;
 }
@@ -143,8 +164,6 @@
 .card-header {
     padding: 1rem 1.35rem;
     margin-bottom: 0;
-    background-color: #f8f9fc;
-    border-bottom: 1px solid #e3e6f0;
 }
 
 .table th {
@@ -159,10 +178,6 @@
     padding: 0.25rem 0.5rem;
     font-size: 0.875rem;
     margin: 0 0.2rem;
-}
-
-.table-hover tbody tr:hover {
-    background-color: rgba(0,0,0,.075);
 }
 
 .display-4 {
