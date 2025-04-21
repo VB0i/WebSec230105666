@@ -65,5 +65,7 @@ Route::get('forgot-password', [UsersController::class, 'showForgotPasswordForm']
 Route::post('forgot-password', [UsersController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::get('reset-password/{token}', [UsersController::class, 'showResetForm'])->name('password.reset');
 Route::post('reset-password', [UsersController::class, 'reset'])->name('password.update');
-
+// facebook
+Route::get('auth/facebook', [UsersController::class, 'redirectToFacebook'])->name('redirectToFacebook');
+Route::get('auth/facebook/callback', [UsersController::class, 'handelFacebookCallback'])->name('handelFacebookCallback');
 

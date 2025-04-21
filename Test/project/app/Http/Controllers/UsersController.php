@@ -256,7 +256,7 @@ public function savePassword(Request $request, User $user) {
     
     public function handleGoogleCallback()
     {
-        $googleUser = Socialite::driver('google')->user();
+        $googleUser = Socialite::driver('google')->stateless()->user();
     
         $user = User::updateOrCreate(
             ['email' => $googleUser->getEmail()],
@@ -272,13 +272,13 @@ public function savePassword(Request $request, User $user) {
     
         Auth::login($user);
     
-        return redirect()->intended('/'); // or wherever you want to go after login
+        return redirect()->intended('/');
     }
 
 public function doLogout()
 {
-    Auth::logout(); // Logs the user out of the application
-    return redirect('/'); // Redirects to the home page after logout
+    Auth::logout(); 
+    return redirect('/');
 }
 
 public function showResetForm(Request $request, $token = null)
@@ -311,6 +311,20 @@ public function reset(Request $request)
         : back()->withErrors(['email' => [__($status)]]);
 }
 
+public function redirectToFacebook(){
+    return Socialite::driver('facebook')->redirect();
+}
 
+public function handelFacebookCallback(){
+    $userfacebook = socialite::driver('facebook')->stateless()->user();
+    $user = User::firstOrCreate(
+        ['facebook_id'=>$userfacebook->getId()],
+        ['facebook_name'=>$userfacebook->getName(),
+        'facebook_email'=>$userfacebook->getEmail()]       
+    );
+
+    Auth::login($user);
+    return redirect()->intended('/');
+}
 
 }
