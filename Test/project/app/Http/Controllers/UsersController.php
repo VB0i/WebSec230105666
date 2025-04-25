@@ -265,7 +265,8 @@ public function savePassword(Request $request, User $user) {
                 'google_id' => $googleUser->getId(),
                 'avatar' => $googleUser->getAvatar(),
                 'google_token' => $googleUser->token,
-                'google_refresh_token' => $googleUser->refreshToken
+                'google_refresh_token' => $googleUser->refreshToken,
+                'email_verified_at'=> now(),
             ]
         );
         
