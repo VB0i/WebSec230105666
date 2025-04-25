@@ -58,9 +58,9 @@ public function sendResetLinkEmail(Request $request)
     //dashboard class
     public function dashboard()
     {
-        // if(!auth()->user()->hasPermissionTo('show_users')) {
-        //     abort(401);
-        // }
+        if(!auth()->user()->hasPermissionTo('show_users')) {
+            abort(401);
+        }
         $users = User::where('id', '!=', 1)->get();
 
         return view('users.dashboard', compact('users'));
@@ -85,7 +85,9 @@ public function sendResetLinkEmail(Request $request)
             'email' => $validated['email'],
             'password' => bcrypt($validated['password']), // Always hash passwords
         ]);
-    
+        
+        $user->assignRole('Customer');
+
         // Send verification email
         try {
             $token = Crypt::encryptString(json_encode([
@@ -269,7 +271,10 @@ public function savePassword(Request $request, User $user) {
                 'email_verified_at'=> now(),
             ]
         );
-        
+
+        if (!$user->hasRole('Customer')) {
+            $user->assignRole('Customer');
+        }
     
         Auth::login($user);
     
@@ -323,6 +328,10 @@ public function handelFacebookCallback(){
         ['facebook_name'=>$userfacebook->getName(),
         'facebook_email'=>$userfacebook->getEmail()]       
     );
+
+    if (!$user->hasRole('Customer')) {
+        $user->assignRole('Customer');
+    }
 
     Auth::login($user);
     return redirect()->intended('/');

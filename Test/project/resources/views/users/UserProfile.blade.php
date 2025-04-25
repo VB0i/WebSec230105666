@@ -32,9 +32,13 @@
                         <tr>
                             <th>Permissions</th>
                             <td>
-                                @foreach($permissions as $permission)
-                                    <span class="badge bg-success me-1">{{$permission->name}}</span>
-                                @endforeach
+                                @if(count($permissions) > 0)
+                                    @foreach($permissions as $permission)
+                                        <span class="badge bg-success me-1">{{$permission->name}}</span>
+                                    @endforeach
+                                @else
+                                    <span class="text-muted">No permissions for a customer</span>
+                                @endif
                             </td>
                         </tr>
                     </table>

@@ -27,9 +27,9 @@
         <hr>
         <h5>Get Started:</h5>
         <p>
-            Ready to dive in? Click the button below to learn more about what we offer.
+            Ready to dive in? Click the button below to login and learn more about what we offer.
         </p>
-        <a href="#" class="btn btn-success">Learn More</a>
+        <a href="{{ route('login') }}" class="btn btn-success">Learn More</a>
     </div>
 </div>
 
