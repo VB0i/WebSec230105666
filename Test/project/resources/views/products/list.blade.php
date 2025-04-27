@@ -14,7 +14,7 @@
 <form>
     <div class="row">
         <div class="col col-sm-2">
-            <input name="keywords" type="text"  class="form-control" placeholder="Search Keywords" value="{{ request()->keywords }}" />
+            <input name="keywords" type="text"  class="form-control" placeholder="Search Keywords" value="{{request()->keywords}}" />
         </div>
         <div class="col col-sm-2">
             <input name="min_price" type="numeric"  class="form-control" placeholder="Min Price" value="{{ request()->min_price }}"/>
@@ -45,6 +45,20 @@
     </div>
 </form>
 
+@if(!empty(request()->keywords))
+    <div class="card mt-2">
+        <div class="card-body">
+            view search results: <span>{{!!request()->keywords!!}}</span>
+        </div>
+    </div>
+@endif
+
+<div class="card my-2">
+<div class="card-body">
+Dear <span id='name'>{{ auth()->user()->name }}</span>, your credit is <span
+id='credit'>{{ auth()->user()->credit }}</span>
+</div>
+</div>
 
 @foreach($products as $product)
     <div class="card mt-2">

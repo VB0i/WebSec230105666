@@ -7,6 +7,9 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CalculaterController;
 use App\Http\Controllers\TranscriptController;
 use App\Http\Controllers\UsersController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
 
 // ============================ Views ==================================
 Route::get('/', function () {
@@ -68,4 +71,23 @@ Route::post('reset-password', [UsersController::class, 'reset'])->name('password
 // facebook
 Route::get('auth/facebook', [UsersController::class, 'redirectToFacebook'])->name('redirectToFacebook');
 Route::get('auth/facebook/callback', [UsersController::class, 'handelFacebookCallback'])->name('handelFacebookCallback');
+
+// sql unprepared function
+// Route::get('/sqli',function(Request $request){
+//     $table = $request->query('table');
+//     DB::unprepared("DROP TABLE $table");
+//     return redirect('/');
+// });
+
+Route::get('/collect', function(Request $request) {
+    $name = $request->query('name');
+    $credit = $request->query('credit');
+
+    return response('data collected', 200)
+        ->header('Access-Control-Allow-Origin', '*')
+        ->header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        ->header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With'); 
+});
+
+
 
