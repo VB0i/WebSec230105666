@@ -229,7 +229,7 @@
               
               <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="{{ route('profile') }}">Profile</a></li>
-                @if(auth()->user()->hasPermissionTo('show_users'))
+                @if(auth()->user()->hasPermissionTo('edit_products'))
                 <li><a class="dropdown-item" href="{{ route('dashboard') }}">Dashboard</a></li>
                 @endif
                 <li><hr class="dropdown-divider"></li>

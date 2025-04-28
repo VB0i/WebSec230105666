@@ -58,7 +58,7 @@ public function sendResetLinkEmail(Request $request)
     //dashboard class
     public function dashboard()
     {
-        if(!auth()->user()->hasPermissionTo('show_users')) {
+        if(!auth()->user()->hasPermissionTo('edit_products')) {
             abort(401);
         }
         $users = User::where('id', '!=', 1)->get();
