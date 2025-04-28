@@ -54,10 +54,13 @@
 @endif
 
 <div class="card my-2">
-<div class="card-body">
-Dear <span id='name'>{{ auth()->user()->name }}</span>, your credit is <span
-id='credit'>{{ auth()->user()->credit }}</span>
-</div>
+    <div class="card-body">
+        @auth
+            Dear <span id='name'>{{ auth()->user()->name }}</span>, your credit is <span id='credit'>{{ auth()->user()->credit }}</span>
+        @else
+            <a href="{{ route('login') }}">Login</a> to see your details.
+        @endauth
+    </div>
 </div>
 
 @foreach($products as $product)
