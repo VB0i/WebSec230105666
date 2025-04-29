@@ -3,29 +3,50 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A dynamic web application with dark/light theme support">
+    <meta name="keywords" content="calculator, products, education, math">
+    <meta name="author" content="Your Name">
     <title>@yield('title')</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    
+    <!-- CSS -->
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=cognition_2" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=cognition_2" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <style>
+        :root {
+            --primary-color: #4285f4;
+            --secondary-color: #8ab4f8;
+            --light-bg: #f1f1f1;
+            --dark-bg: #333333;
+            --transition-speed: 0.3s;
+        }
+
+        body {
+            transition: background-color var(--transition-speed);
+        }
+
         /* Toggle button styles */
         .mode-toggle {
             position: relative;
             width: 80px;
             height: 40px;
             border-radius: 20px;
-            background: #f1f1f1;
+            background: var(--light-bg);
             cursor: pointer;
             overflow: hidden;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             border: none;
             margin-right: 10px;
+            transition: background-color var(--transition-speed);
         }
         
         .dark-mode .mode-toggle {
-            background: #333333;
+            background: var(--dark-bg);
         }
         
         .toggle-inner {
@@ -42,7 +63,7 @@
         .toggle-icon {
             width: 24px;
             height: 24px;
-            transition: transform 0.3s ease, opacity 0.3s;
+            transition: transform var(--transition-speed) ease, opacity var(--transition-speed);
             z-index: 2;
             display: flex;
             align-items: center;
@@ -75,26 +96,27 @@
             position: absolute;
             width: 30px;
             height: 30px;
-            background: #4285f4;
+            background: var(--primary-color);
             border-radius: 50%;
             left: 5px;
             top: 5px;
-            transition: left 0.3s ease, background 0.3s;
+            transition: all var(--transition-speed) ease;
             z-index: 1;
         }
         
         .dark-mode .toggle-ball {
             left: calc(100% - 35px);
-            background: #8ab4f8;
+            background: var(--secondary-color);
         }
         
-        /* Cartoon stars (visible in dark mode) */
+        /* Enhanced animations */
         .stars {
             position: absolute;
             width: 100%;
             height: 100%;
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: opacity var(--transition-speed);
+            pointer-events: none;
         }
         
         .dark-mode .stars {
@@ -108,14 +130,14 @@
             width: 8px;
             height: 8px;
             animation: twinkle 2s infinite alternate;
+            filter: drop-shadow(0 0 2px rgba(255,255,255,0.7));
         }
         
         @keyframes twinkle {
-            0% { opacity: 0.3; }
-            100% { opacity: 1; }
+            0% { opacity: 0.3; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
         }
         
-        /* Cloud (visible in light mode) */
         .cloud {
             position: absolute;
             width: 24px;
@@ -123,15 +145,17 @@
             background: white;
             border-radius: 12px;
             opacity: 1;
-            transition: opacity 0.3s;
+            transition: all var(--transition-speed);
             animation: float 3s infinite ease-in-out;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));
         }
         
         .dark-mode .cloud {
             opacity: 0;
+            transform: translate(-50%, -50%) scale(0.8);
         }
         
         .cloud:before, .cloud:after {
@@ -139,6 +163,7 @@
             position: absolute;
             background: white;
             border-radius: 50%;
+            transition: all var(--transition-speed);
         }
         
         .cloud:before {
@@ -167,6 +192,45 @@
           'GRAD' 0,
           'opsz' 40
         }
+
+        /* Enhanced navbar styles */
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: box-shadow var(--transition-speed);
+        }
+
+        .dark-mode .navbar {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .nav-link {
+            transition: color var(--transition-speed);
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+
+        /* Enhanced dropdown styles */
+        .dropdown-menu {
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all var(--transition-speed);
+        }
+
+        .dark-mode .dropdown-menu {
+            background-color: var(--dark-bg);
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        .dropdown-item {
+            transition: background-color var(--transition-speed);
+        }
+
+        .container {
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
     </style>
 </head>
 <body>
@@ -182,7 +246,7 @@
           <a class="nav-link active" aria-current="page" href="/">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/multable">Multibication</a>
+          <a class="nav-link" href="/multable">Multiplication</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="/even">Even Numbers</a>
@@ -205,7 +269,7 @@
       </ul>
       <ul class="navbar-nav">
         <li class="nav-item me-3">
-          <button class="mode-toggle" id="modeToggle">
+          <button class="mode-toggle" id="modeToggle" aria-label="Toggle dark mode">
             <div class="toggle-inner">
               <div class="toggle-icon sun"><i class="fas fa-sun"></i></div>
               <div class="toggle-icon moon"><i class="fas fa-moon"></i></div>
@@ -262,28 +326,36 @@
 document.addEventListener('DOMContentLoaded', function() {
     const html = document.documentElement;
     const themeToggle = document.getElementById('modeToggle');
+    const THEME_KEY = 'theme';
+    const DARK_MODE_CLASS = 'dark-mode';
+    const PREFERRED_THEME = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 
-    // Check for saved theme preference, default to light if none found
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    html.setAttribute('data-bs-theme', savedTheme);
-    if (savedTheme === 'dark') {
-        html.classList.add('dark-mode');
-    }
+    // Check for saved theme preference, default to system preference if none found
+    const savedTheme = localStorage.getItem(THEME_KEY) || PREFERRED_THEME;
+    applyTheme(savedTheme);
+
+    // Listen for system theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+        if (!localStorage.getItem(THEME_KEY)) {
+            applyTheme(e.matches ? 'dark' : 'light');
+        }
+    });
 
     themeToggle.addEventListener('click', () => {
         const currentTheme = html.getAttribute('data-bs-theme');
         const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-        
-        html.setAttribute('data-bs-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-        
-        // Toggle dark-mode class for our custom animations
-        if (newTheme === 'dark') {
-            html.classList.add('dark-mode');
-        } else {
-            html.classList.remove('dark-mode');
-        }
+        applyTheme(newTheme);
+        localStorage.setItem(THEME_KEY, newTheme);
     });
+
+    function applyTheme(theme) {
+        html.setAttribute('data-bs-theme', theme);
+        if (theme === 'dark') {
+            html.classList.add(DARK_MODE_CLASS);
+        } else {
+            html.classList.remove(DARK_MODE_CLASS);
+        }
+    }
 });
 </script>
 </body>

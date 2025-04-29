@@ -79,15 +79,15 @@ Route::get('auth/facebook/callback', [UsersController::class, 'handelFacebookCal
 //     return redirect('/');
 // });
 
-Route::get('/collect', function(Request $request) {
-    $name = $request->query('name');
-    $credit = $request->query('credit');
+// Route::get('/collect', function(Request $request) {
+//     $name = $request->query('name');
+//     $credit = $request->query('credit');
 
-    return response('data collected', 200)
-        ->header('Access-Control-Allow-Origin', '*')
-        ->header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-        ->header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With'); 
-});
+//     return response('data collected', 200)
+//         ->header('Access-Control-Allow-Origin', '*')
+//         ->header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+//         ->header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With'); 
+// });
 
 
 
