@@ -266,6 +266,9 @@
         <li class="nav-item">
           <a class="nav-link" href="/products">Products</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{route('cryptography')}}">Cryptography</a>
+        </li>
       </ul>
       <ul class="navbar-nav">
         <li class="nav-item me-3">
