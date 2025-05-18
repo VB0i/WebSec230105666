@@ -95,6 +95,15 @@
                         <tr><th>Code</th><td>{{$product->code}}</td></tr>
                         <tr><th>Description</th><td>{{$product->description}}</td></tr>
                     </table>
+
+                    @can('select_favourite')
+                    <form action="{{ route('products.favourite', $product->id) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn {{ $product->favourite ? 'btn-outline-info' : 'btn-info' }} shadow-sm">
+                            {{ $product->favourite ? 'Unfavourite' : 'Favourite' }}
+                        </button>
+                    </form>
+                    @endcan
                 </div>
             </div>
         </div>
