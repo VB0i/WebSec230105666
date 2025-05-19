@@ -42,6 +42,7 @@ Route::prefix('products')->group(function () {
     Route::post('/save/{product?}', [ProductController::class, 'save'])->name('products_save');
     Route::get('/delete/{product}', [ProductController::class, 'delete'])->name('products_delete');
 });
+Route::post('/products/{id}/favourite', action: [ProductController::class, 'toggleFavourite'])->name('products.favourite');
 
 // Authentication Routes
 Route::get('register', [UsersController::class, 'register'])->name('register');
