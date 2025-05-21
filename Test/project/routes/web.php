@@ -9,11 +9,17 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CalculaterController;
 use App\Http\Controllers\TranscriptController;
 use App\Http\Controllers\UsersController;
+use App\Models\User;
 
 // Basic Views
 Route::get('/', function () {
+    $email = emailFromLoginCertificate();
+    if($email && !auth()->user()) {
+    $user = User::where('email', $email)->first();
+    if($user) Auth::setUser($user);
+    }
     return view('welcome');
-});
+   });
 
 Route::get('/multable', function () {
     return view('multable');
